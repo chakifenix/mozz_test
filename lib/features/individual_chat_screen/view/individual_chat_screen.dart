@@ -51,7 +51,7 @@ class IndividualScreen extends StatelessWidget {
           title: Row(
             children: [
               CircleAvatar(
-                radius: 25,
+                radius: 25.r,
               ),
               SizedBox(
                 width: 12.w,
@@ -89,11 +89,12 @@ class IndividualScreen extends StatelessWidget {
         Expanded(
           child: Container(
               child: Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 20.h),
                   child: _buildMessageList())),
         ),
         Container(
-          padding: EdgeInsets.only(left: 20, right: 20, top: 14, bottom: 44),
+          padding:
+              EdgeInsets.only(left: 20.w, right: 20.w, top: 14.h, bottom: 44.h),
           decoration: BoxDecoration(
               color: Colors.transparent,
               border: Border(top: BorderSide(color: Color(0xFFEDF2F6)))),
@@ -103,17 +104,17 @@ class IndividualScreen extends StatelessWidget {
               Container(
                   width: 42.w,
                   height: 42.h,
-                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                  padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 6.w),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       color: Color(0xFFEDF2F6)),
                   child: SvgPicture.asset('images/skrepka.svg')),
               Container(
-                  width: 235,
-                  height: 42,
+                  width: 235.w,
+                  height: 42.h,
                   decoration: BoxDecoration(
                       color: Color(0xFFEDF2F6),
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12.r)),
                   child: TextField(
                     controller: _messageController,
                     maxLines: 5,
@@ -123,7 +124,8 @@ class IndividualScreen extends StatelessWidget {
                             borderSide: BorderSide(color: Colors.transparent)),
                         enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.transparent)),
-                        contentPadding: EdgeInsets.only(left: 12, right: 10),
+                        contentPadding:
+                            EdgeInsets.only(left: 12.w, right: 10.w),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.r),
                             borderSide: BorderSide(color: Colors.black)),
@@ -133,12 +135,13 @@ class IndividualScreen extends StatelessWidget {
               GestureDetector(
                 onTap: sendMessage,
                 child: Container(
-                    width: 42,
-                    height: 42,
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                    width: 42.w,
+                    height: 42.h,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 6.h, horizontal: 6.w),
                     decoration: BoxDecoration(
                         color: Color(0xFFEDF2F6),
-                        borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12.r)),
                     child: SvgPicture.asset('images/Audio.svg')),
               )
             ],
@@ -168,15 +171,46 @@ class IndividualScreen extends StatelessWidget {
         List<Widget> a =
             snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList();
         a.reversed;
-        return ListView.builder(
-          itemCount: a.length,
+        return ListView(
           reverse: true,
-          itemBuilder: (context, index) {
-            return Container(
-              child: a[a.length - (index + 1)],
-            );
-          },
+          children: [
+            for (int i = a.length - 1; i >= 0; i--)
+              Container(
+                child: a[i],
+              ),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Container(
+                width: 140.w,
+                height: 2.h,
+                color: Color(0xFFEDF2F6),
+              ),
+              Text(
+                '18.01.24',
+                style: TextStyle(
+                  color: Color(0xFF9DB6CA),
+                  fontSize: 13.sp,
+                  fontFamily: 'Gilroy',
+                  fontWeight: FontWeight.w600,
+                  height: 0,
+                ),
+              ),
+              Container(
+                width: 140.w,
+                height: 2.h,
+                color: Color(0xFFEDF2F6),
+              ),
+            ]),
+          ],
         );
+        // return ListView.builder(
+        //   itemCount: a.length,
+        //   reverse: true,
+        //   itemBuilder: (context, index) {
+        //     return Container(
+        //       child: a[a.length - (index + 1)],
+        //     );
+        //   },
+        // );
       },
     );
   }

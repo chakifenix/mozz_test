@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mozz/services/auth/auth_service.dart';
 import 'package:mozz/features/login_page/widgets/my_textfield.dart';
 
@@ -27,7 +28,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -37,7 +38,7 @@ class LoginScreen extends StatelessWidget {
                 obscureText: false,
               ),
               SizedBox(
-                height: 10,
+                height: 10.h,
               ),
               MyTextField(
                 obscureText: true,
@@ -45,10 +46,10 @@ class LoginScreen extends StatelessWidget {
                 controller: _passwordController,
               ),
               SizedBox(
-                height: 20,
+                height: 20.h,
               ),
               ElevatedButton(
-                  onPressed: () => login(context), child: Text('data'))
+                  onPressed: () => login(context), child: Text('Войти'))
             ],
           ),
         ),
