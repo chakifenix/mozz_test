@@ -9,8 +9,12 @@ import 'package:mozz/services/chat/chat_services.dart';
 class IndividualScreen extends StatelessWidget {
   final String receiverEmail;
   final String receiverID;
+  final String fullName;
   IndividualScreen(
-      {super.key, required this.receiverEmail, required this.receiverID});
+      {super.key,
+      required this.receiverEmail,
+      required this.receiverID,
+      required this.fullName});
 
   final TextEditingController _messageController = TextEditingController();
 
@@ -60,7 +64,7 @@ class IndividualScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    receiverEmail,
+                    fullName,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 15.sp,
@@ -70,7 +74,7 @@ class IndividualScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    receiverID,
+                    'online',
                     style: TextStyle(
                       color: Color(0xFF5D7A90),
                       fontSize: 12.sp,
@@ -153,7 +157,6 @@ class IndividualScreen extends StatelessWidget {
 
   Widget _buildMessageList() {
     String senderID = _authService.getCurrentsUser()!.uid;
-    print(senderID);
     return StreamBuilder(
       stream: _chatService.getMessages(receiverID, senderID),
       builder: (context, snapshot) {
