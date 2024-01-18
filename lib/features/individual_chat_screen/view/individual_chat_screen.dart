@@ -1,12 +1,34 @@
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:mozz/features/individual_chat_screen/widgets/own_message.dart';
-import 'package:mozz/features/individual_chat_screen/widgets/reply_card.dart';
+import 'package:mozz/services/auth/auth_service.dart';
+import 'package:mozz/services/chat/chat_services.dart';
 
 class IndividualScreen extends StatelessWidget {
-  const IndividualScreen({super.key});
+  final String receiverEmail;
+  final String receiverID;
+  IndividualScreen(
+      {super.key, required this.receiverEmail, required this.receiverID});
+
+  final TextEditingController _messageController = TextEditingController();
+
+  // chat & auth services
+  final ChatService _chatService = ChatService();
+  final AuthService _authService = AuthService();
+
+  // send message
+  void sendMessage() async {
+    // if there is something inside the textfield
+    if (_messageController.text.isNotEmpty) {
+      // send the message
+      await _chatService.sendMessage(receiverID, _messageController.text);
+
+      // clear text controller
+      _messageController.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +39,13 @@ class IndividualScreen extends StatelessWidget {
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
           elevation: 1,
-          leading: Transform.scale(
-            scale: 0.5,
-            child: SvgPicture.asset(
-              'images/left.svg',
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Transform.scale(
+              scale: 0.5,
+              child: SvgPicture.asset(
+                'images/left.svg',
+              ),
             ),
           ),
           title: Row(
@@ -35,7 +60,7 @@ class IndividualScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Виктор Власов',
+                    receiverEmail,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 15.sp,
@@ -45,7 +70,7 @@ class IndividualScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'В сети',
+                    receiverID,
                     style: TextStyle(
                       color: Color(0xFF5D7A90),
                       fontSize: 12.sp,
@@ -64,53 +89,8 @@ class IndividualScreen extends StatelessWidget {
         Expanded(
           child: Container(
               child: Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            child: ListView(
-              reverse: true,
-              children: [
-                BubbleSpecialThree(
-                  text: 'Please try and give some feedback on it!',
-                  color: Color(0xFF1B97F3),
-                  tail: true,
-                  isSender: false,
-                  textStyle: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                BubbleSpecialThree(
-                  text: 'Please try and give some feedback on it!',
-                  color: Color(0xFF1B97F3),
-                  tail: true,
-                  textStyle: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                SizedBox(
-                  height: 23,
-                ),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 140,
-                        height: 2,
-                        color: Color(0xFFEDF2F6),
-                      ),
-                      Text(
-                        '27.01.22',
-                        style: TextStyle(
-                          color: Color(0xFF9DB6CA),
-                          fontSize: 13.sp,
-                          fontFamily: 'Gilroy',
-                          fontWeight: FontWeight.w600,
-                          height: 0,
-                        ),
-                      ),
-                      Container(
-                        width: 140,
-                        height: 2,
-                        color: Color(0xFFEDF2F6),
-                      ),
-                    ]),
-              ],
-            ),
-          )),
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  child: _buildMessageList())),
         ),
         Container(
           padding: EdgeInsets.only(left: 20, right: 20, top: 14, bottom: 44),
@@ -121,8 +101,8 @@ class IndividualScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                  width: 42,
-                  height: 42,
+                  width: 42.w,
+                  height: 42.h,
                   padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
@@ -135,6 +115,7 @@ class IndividualScreen extends StatelessWidget {
                       color: Color(0xFFEDF2F6),
                       borderRadius: BorderRadius.circular(12)),
                   child: TextField(
+                    controller: _messageController,
                     maxLines: 5,
                     minLines: 1,
                     decoration: InputDecoration(
@@ -149,54 +130,79 @@ class IndividualScreen extends StatelessWidget {
                         hintText: 'Поиск',
                         prefixIconColor: Colors.grey),
                   )),
-              Container(
-                  width: 42,
-                  height: 42,
-                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-                  decoration: BoxDecoration(
-                      color: Color(0xFFEDF2F6),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: SvgPicture.asset('images/Audio.svg'))
+              GestureDetector(
+                onTap: sendMessage,
+                child: Container(
+                    width: 42,
+                    height: 42,
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                    decoration: BoxDecoration(
+                        color: Color(0xFFEDF2F6),
+                        borderRadius: BorderRadius.circular(12)),
+                    child: SvgPicture.asset('images/Audio.svg')),
+              )
             ],
           ),
         )
-        // Container(
-        //   padding: EdgeInsets.only(bottom: 23),
-        //   decoration: BoxDecoration(
-        //       color: Colors.green,
-        //       border: Border(top: BorderSide(color: Colors.green))),
-        //   child: Row(
-        //     children: [
-        //       Container(
-        //         color: Colors.blue,
-        //         padding: EdgeInsets.all(6.w),
-        //         child: SvgPicture.asset('images/skrepka.svg'),
-        //       ),
-        //       // SizedBox(
-        //       //   child: Container(
-        //       //     width: 235.w,
-        //       //     height: 42.h,
-        //       //     decoration: BoxDecoration(
-        //       //         color: Colors.red,
-        //       //         borderRadius: BorderRadius.circular(12.r)),
-        //       //     child: TextFormField(
-        //       //       textAlignVertical: TextAlignVertical.center,
-        //       //       keyboardType: TextInputType.multiline,
-        //       //       maxLines: 5,
-        //       //       minLines: 1,
-        //       //       decoration: InputDecoration(
-        //       //         contentPadding:
-        //       //             EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        //       //         border: InputBorder.none,
-        //       //         hintText: 'Сіздің хабарламаңыз...',
-        //       //       ),
-        //       //     ),
-        //       //   ),
-        //       // ),
-        //     ],
-        //   ),
-        // )
       ]),
     );
   }
+
+  Widget _buildMessageList() {
+    String senderID = _authService.getCurrentsUser()!.uid;
+    print(senderID);
+    return StreamBuilder(
+      stream: _chatService.getMessages(receiverID, senderID),
+      builder: (context, snapshot) {
+        // errors
+        if (snapshot.hasError) {
+          return const Text("Error");
+        }
+
+        //loading
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Text("Loading");
+        }
+
+        // return list view
+        List<Widget> a =
+            snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList();
+        a.reversed;
+        return ListView.builder(
+          itemCount: a.length,
+          reverse: true,
+          itemBuilder: (context, index) {
+            return Container(
+              child: a[a.length - (index + 1)],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // build message input
+  Widget _buildMessageItem(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+    // is current user
+    bool isCurrentUser =
+        data['senderId'] == _authService.getCurrentsUser()!.uid;
+
+    return BubbleSpecialThree(
+      text: data["message"],
+      color: isCurrentUser ? Color(0xFF3BEC78) : Color(0xFFEDF2F6),
+      tail: true,
+      isSender: isCurrentUser,
+      textStyle: TextStyle(
+        color: Color(0xFF2B333E),
+        fontSize: 14.sp,
+        fontFamily: 'Gilroy',
+        fontWeight: FontWeight.w500,
+        height: 0,
+      ),
+    );
+  }
+
+  // build message input
 }
