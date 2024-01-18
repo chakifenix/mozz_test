@@ -3,10 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UserTile extends StatelessWidget {
   final String text;
+  final String initial;
   final void Function()? onTap;
   const UserTile({
     super.key,
     required this.text,
+    required this.initial,
     this.onTap,
   });
 
@@ -29,7 +31,7 @@ class UserTile extends StatelessWidget {
                   CircleAvatar(
                     radius: 25.r,
                     child: Text(
-                      'ВВ',
+                      initial,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20.sp,

@@ -91,13 +91,15 @@ class ChatsScreen extends StatelessWidget {
     // display all users except currentUser
     if (userData["email"] != _authService.getCurrentsUser()!.email) {
       return UserTile(
-        text: userData["email"],
+        text: '${userData["name"]} ${userData["surname"]}',
+        initial: '${userData["name"][0]}${userData["surname"][0]}',
         onTap: () {
           // tapped on a user -> go to chat page
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => IndividualScreen(
+                        fullName: '${userData["name"]} ${userData["surname"]}',
                         receiverID: userData["uid"],
                         receiverEmail: userData["email"],
                       )));
