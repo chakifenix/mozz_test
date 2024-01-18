@@ -1,9 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mozz/services/auth/auth_gate.dart';
 import 'package:mozz/features/chats_page/view/chats_screen.dart';
 import 'package:mozz/features/individual_chat_screen/view/individual_chat_screen.dart';
+import 'package:mozz/features/login_page/view/login_screen.dart';
+import 'package:mozz/firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -18,7 +24,7 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(home: IndividualScreen());
+        return MaterialApp(home: AuthGate());
       },
     );
   }

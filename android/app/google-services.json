@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "368568880404",
+    "project_id": "mozzchat-49da2",
+    "storage_bucket": "mozzchat-49da2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368568880404:android:9e1a23759f3f536fdf0601",
+        "android_client_info": {
+          "package_name": "ZYK.example.mozz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7_qBl9hA1PjspvjwG4DZ6Cz573Kv3q08"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mozz/features/chats_page/widgets/user_tile.dart';
+import 'package:mozz/features/individual_chat_screen/view/individual_chat_screen.dart';
+import 'package:mozz/services/auth/auth_service.dart';
+import 'package:mozz/services/chat/chat_services.dart';
 
 class ChatsScreen extends StatelessWidget {
-  const ChatsScreen({super.key});
+  ChatsScreen({super.key});
+
+  // chat auth service
+  final ChatService _chatService = ChatService();
+  final AuthService _authService = AuthService();
+
+  void logout() {
+    //get auth service
+    final _auth = AuthService();
+    _auth.signOut();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +34,21 @@ class ChatsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Чаты',
-                    style: TextStyle(
-                      color: Color(0xFF2B333E),
-                      fontSize: 32.sp,
-                      fontFamily: 'Gilroy',
-                      fontWeight: FontWeight.w600,
-                      height: 0,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Чаты',
+                        style: TextStyle(
+                          color: Color(0xFF2B333E),
+                          fontSize: 32.sp,
+                          fontFamily: 'Gilroy',
+                          fontWeight: FontWeight.w600,
+                          height: 0,
+                        ),
+                      ),
+                      IconButton(onPressed: logout, icon: Icon(Icons.logout))
+                    ],
                   ),
                   CupertinoSearchTextField(
                     placeholder: 'Поиск',
@@ -36,99 +56,55 @@ class ChatsScreen extends StatelessWidget {
                   )
                 ],
               )),
-          Expanded(
-            child: ListView.builder(
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                    child: Container(
-                      padding:
-                          EdgeInsets.only(bottom: 10.h, top: 10.h, right: 12.w),
-                      decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(color: Color(0xFFEDF2F6)))),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 25.r,
-                                child: Text(
-                                  'ВВ',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20.sp,
-                                    fontFamily: 'Gilroy',
-                                    fontWeight: FontWeight.w700,
-                                    height: 0,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 12.w,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Виктор Власов',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 15.sp,
-                                      fontFamily: 'Gilroy',
-                                      fontWeight: FontWeight.w600,
-                                      height: 0,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Вы:',
-                                        style: TextStyle(
-                                          color: Color(0xFF2B333E),
-                                          fontSize: 12.sp,
-                                          fontFamily: 'Gilroy',
-                                          fontWeight: FontWeight.w500,
-                                          height: 0,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Уже сделал?',
-                                        style: TextStyle(
-                                          color: Color(0xFF5D7A90),
-                                          fontSize: 12.sp,
-                                          fontFamily: 'Gilroy',
-                                          fontWeight: FontWeight.w500,
-                                          height: 0,
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                          Text(
-                            'Вчера',
-                            style: TextStyle(
-                              color: Color(0xFF5D7A90),
-                              fontSize: 12.sp,
-                              fontFamily: 'Gilroy',
-                              fontWeight: FontWeight.w500,
-                              height: 0,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-          )
+          Expanded(child: _buildUserList())
         ],
       )),
     );
+  }
+
+  Widget _buildUserList() {
+    return StreamBuilder(
+        stream: _chatService.getUsersStream(),
+        builder: (context, snapshot) {
+          // error
+          if (snapshot.hasError) {
+            return const Text('Error');
+          }
+
+          // loading
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text('Loading..');
+          }
+
+          // return list view
+          return ListView(
+            children: snapshot.data!
+                .map<Widget>(
+                    (userData) => _buildUserListItem(userData, context))
+                .toList(),
+          );
+        });
+  }
+
+  Widget _buildUserListItem(
+      Map<String, dynamic> userData, BuildContext context) {
+    // display all users except currentUser
+    if (userData["email"] != _authService.getCurrentsUser()!.email) {
+      return UserTile(
+        text: userData["email"],
+        onTap: () {
+          // tapped on a user -> go to chat page
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => IndividualScreen(
+                        receiverID: userData["uid"],
+                        receiverEmail: userData["email"],
+                      )));
+        },
+      );
+    } else {
+      return Container();
+    }
   }
 }
